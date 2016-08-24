@@ -21,5 +21,5 @@ sub main::run {
     $fh->print(shift);
     $fh->close;
 
-    is_deeply plint( $fh->filename ), \@_, $name;
+    is_deeply +( plint( $fh->filename ) )[0], \@_, $name;
 }
