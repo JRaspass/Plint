@@ -53,7 +53,7 @@ sub plint {
                     && $tokens->[ ++$i ]{type} == T_LeftBrace );
             }
         }
-        elsif( $type == Compiler::Lexer::TokenType::T_SpecificValue ) {
+        elsif( $type == T_SpecificValue ) {
             if ( $token->{data} eq '$_' ) {
                 $type = ( $tokens->[ ++$i ] or next )->{type};
 
