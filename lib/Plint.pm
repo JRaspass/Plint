@@ -6,7 +6,7 @@ use warnings;
 use Compiler::Lexer;
 
 BEGIN {
-     no strict 'refs';
+    no strict 'refs';
 
     # Copy the TokenType constants into our package to improve readability.
     /^T_/ and *$_ = \&{"Compiler::Lexer::TokenType::$_"}
@@ -53,7 +53,7 @@ sub plint {
                     && $tokens->[ ++$i ]{type} == T_LeftBrace );
             }
         }
-        elsif( $type == T_SpecificValue ) {
+        elsif ( $type == T_SpecificValue ) {
             if ( $token->{data} eq '$_' ) {
                 $type = ( $tokens->[ ++$i ] or next )->{type};
 
