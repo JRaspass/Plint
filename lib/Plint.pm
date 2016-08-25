@@ -54,15 +54,22 @@ sub plint {
         elsif ( $type == T_BuiltinFunc ) {
             my $data = $token->{data};
 
-            push @errors, qq/\$_ should be omitted when calling "$data" at line $token->{line}./
-                if exists $topical_funcs{$data}
-                && ( $i < @$tokens - 1
-                &&   $tokens->[ $i + 1 ]{type} == T_SpecificValue
-                &&   $tokens->[ $i + 1 ]{data} eq '$_' )
-                || ( $i < @$tokens - 2
-                &&   $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
-                &&   $tokens->[ $i + 2 ]{type} == T_SpecificValue
-                &&   $tokens->[ $i + 2 ]{data} eq '$_' );
+            push @errors,
+                qq/\$_ should be omitted when calling "$data" at line $token->{line}./
+                if exists $topical_funcs{$data} && (
+                    (
+                           $i < @$tokens - 1
+                        && $tokens->[ $i + 1 ]{type} == T_SpecificValue
+                        && $tokens->[ $i + 1 ]{data} eq '$_'
+                    )
+                    ||
+                    (
+                           $i < @$tokens - 2
+                        && $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
+                        && $tokens->[ $i + 2 ]{type} == T_SpecificValue
+                        && $tokens->[ $i + 2 ]{data} eq '$_'
+                    )
+                );
 
             if ( $data eq 'eval' ) {
                 my $line = $token->{line};
@@ -88,14 +95,20 @@ sub plint {
             }
         }
         elsif ( $type == T_RequireDecl ) {
-            push @errors, qq/\$_ should be omitted when calling "require" at line $token->{line}./
-                if ( $i < @$tokens - 1
-                &&   $tokens->[ $i + 1 ]{type} == T_SpecificValue
-                &&   $tokens->[ $i + 1 ]{data} eq '$_' )
-                || ( $i < @$tokens - 2
-                &&   $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
-                &&   $tokens->[ $i + 2 ]{type} == T_SpecificValue
-                &&   $tokens->[ $i + 2 ]{data} eq '$_' );
+            push @errors,
+                qq/\$_ should be omitted when calling "require" at line $token->{line}./
+                if (
+                       $i < @$tokens - 1
+                    && $tokens->[ $i + 1 ]{type} == T_SpecificValue
+                    && $tokens->[ $i + 1 ]{data} eq '$_'
+                )
+                ||
+                (
+                       $i < @$tokens - 2
+                    && $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
+                    && $tokens->[ $i + 2 ]{type} == T_SpecificValue
+                    && $tokens->[ $i + 2 ]{data} eq '$_'
+                );
         }
         elsif ( $type == T_Handle ) {
             push @errors,
