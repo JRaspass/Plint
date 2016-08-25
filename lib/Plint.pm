@@ -15,6 +15,17 @@ BEGIN {
 
 my $lexer = Compiler::Lexer->_new( { filename => '', verbose => 0 } );
 
+# TODO reverse, split, unpack are different
+my %topical_funcs;
+@topical_funcs{
+    qw/
+        abs alarm chomp chop chr chroot cos defined eval evalbytes exp fc glob
+        hex int lc lcfirst length log lstat mkdir oct ord pos print prototype
+        quotemeta readlink readpipe ref require rmdir say sin sqrt stat study
+        uc ucfirst unlink
+        /
+} = ();
+
 sub import {
     no strict 'refs';
 
@@ -43,6 +54,16 @@ sub plint {
         elsif ( $type == T_BuiltinFunc ) {
             my $data = $token->{data};
 
+            push @errors, qq/\$_ should be omitted when calling "$data" at line $token->{line}./
+                if exists $topical_funcs{$data}
+                && ( $i < @$tokens - 1
+                &&   $tokens->[ $i + 1 ]{type} == T_SpecificValue
+                &&   $tokens->[ $i + 1 ]{data} eq '$_' )
+                || ( $i < @$tokens - 2
+                &&   $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
+                &&   $tokens->[ $i + 2 ]{type} == T_SpecificValue
+                &&   $tokens->[ $i + 2 ]{data} eq '$_' );
+
             if ( $data eq 'eval' ) {
                 my $line = $token->{line};
 
@@ -65,6 +86,16 @@ sub plint {
                         if $type != T_Var && $type != T_GlobalVar;
                 }
             }
+        }
+        elsif ( $type == T_RequireDecl ) {
+            push @errors, qq/\$_ should be omitted when calling "require" at line $token->{line}./
+                if ( $i < @$tokens - 1
+                &&   $tokens->[ $i + 1 ]{type} == T_SpecificValue
+                &&   $tokens->[ $i + 1 ]{data} eq '$_' )
+                || ( $i < @$tokens - 2
+                &&   $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
+                &&   $tokens->[ $i + 2 ]{type} == T_SpecificValue
+                &&   $tokens->[ $i + 2 ]{data} eq '$_' );
         }
     }
 

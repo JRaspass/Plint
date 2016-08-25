@@ -8,6 +8,7 @@ use Plint;
 use Test::More;
 
 *main::done_testing = \&Test::More::done_testing;
+*main::subtest      = \&Test::More::subtest;
 
 sub import {
     strict->import;
