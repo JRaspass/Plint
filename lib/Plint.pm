@@ -32,6 +32,23 @@ sub import {
     *{ caller . '::plint' } = \&plint;
 }
 
+sub _arg_is_dollar_underscore {
+    my ( $i, $tokens ) = @_;
+
+    return if ++$i > $#$tokens;
+
+    # Skip over opening paren if we have it.
+    $i++ if $tokens->[$i]{type} == T_LeftParenthesis;
+
+       $tokens->[$i]{type} == T_SpecificValue
+    && $tokens->[$i]{data} eq '$_'
+    && ( $i == $#$tokens || (
+        # Ensure we don't have $_[0] or $_->
+           $tokens->[ ++$i ]{type} != T_LeftBracket
+        && $tokens->[   $i ]{type} != T_Pointer
+    ));
+}
+
 sub plint {
     local ( @ARGV, $/ ) = @_;
 
@@ -56,30 +73,8 @@ sub plint {
 
             push @errors,
                 qq/\$_ should be omitted when calling "$data" at line $token->{line}./
-                if exists $topical_funcs{$data} && (
-                    (
-                           $i < @$tokens - 1
-                        && $tokens->[ $i + 1 ]{type} == T_SpecificValue
-                        && $tokens->[ $i + 1 ]{data} eq '$_'
-                        # Protect aganst $_[0] being interpreted as $_.
-                        && (
-                               $i == @$tokens - 2
-                            || $tokens->[ $i + 2 ]{type} != T_LeftBracket
-                        )
-                    )
-                    ||
-                    (
-                           $i < @$tokens - 2
-                        && $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
-                        && $tokens->[ $i + 2 ]{type} == T_SpecificValue
-                        && $tokens->[ $i + 2 ]{data} eq '$_'
-                        # Protect aganst $_[0] being interpreted as $_.
-                        && (
-                               $i == @$tokens - 3
-                            || $tokens->[ $i + 3 ]{type} != T_LeftBracket
-                        )
-                    )
-                );
+                if exists $topical_funcs{$data}
+                && _arg_is_dollar_underscore( $i, $tokens );
 
             if ( $data eq 'eval' ) {
                 my $line = $token->{line};
@@ -107,41 +102,13 @@ sub plint {
         elsif ( $type == T_RequireDecl ) {
             push @errors,
                 qq/\$_ should be omitted when calling "require" at line $token->{line}./
-                if (
-                       $i < @$tokens - 1
-                    && $tokens->[ $i + 1 ]{type} == T_SpecificValue
-                    && $tokens->[ $i + 1 ]{data} eq '$_'
-                    # Protect aganst $_[0] being interpreted as $_.
-                    && (
-                           $i == @$tokens - 2
-                        || $tokens->[ $i + 2 ]{type} != T_LeftBracket
-                    )
-                )
-                ||
-                (
-                       $i < @$tokens - 2
-                    && $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
-                    && $tokens->[ $i + 2 ]{type} == T_SpecificValue
-                    && $tokens->[ $i + 2 ]{data} eq '$_'
-                    # Protect aganst $_[0] being interpreted as $_.
-                    && (
-                           $i == @$tokens - 3
-                        || $tokens->[ $i + 3 ]{type} != T_LeftBracket
-                    )
-                );
+                if _arg_is_dollar_underscore( $i, $tokens );
         }
         elsif ( $type == T_Handle ) {
             push @errors,
                 "\$_ should be omitted when using a filetest operator at line $token->{line}."
-                if $i != $#$tokens
-                && $token->{data} ne '-t'
-                && $tokens->[ ++$i ]{type} == T_SpecificValue
-                && $tokens->[   $i ]{data} eq '$_'
-                # Protect aganst $_[0] being interpreted as $_.
-                && (
-                       $i == $#$tokens
-                    || $tokens->[ ++$i ]{type} != T_LeftBracket
-                )
+                if $token->{data} ne '-t'
+                && _arg_is_dollar_underscore( $i, $tokens );
         }
     }
 

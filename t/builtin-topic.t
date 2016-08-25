@@ -15,6 +15,8 @@ subtest $_ => sub {
     run "$_ \$_[0]", "$_ \$_[0]";
 
     run "$_(\$_[0])", "$_(\$_[0])";
+
+    run "$_ \$_->foo", "$_ \$_->foo";
 } for qw/
     abs alarm chomp chop chr chroot cos defined evalbytes exp fc glob hex int
     lc lcfirst length log lstat mkdir oct ord pos print prototype quotemeta
