@@ -1,19 +1,17 @@
 use t;
 
-run '$foo =~ /foo/', 'Variable matching literal regexp';
+t '$foo =~ /foo/';
 
-run '$@ =~ /foo/', '$@ matching literal regexp';
+t '$@ =~ /foo/';
 
-run '$_ =~ /foo/',
-    '$_ should be omitted when matching a regular expression at line 1.',
-    '$_ matching literal regexp';
+t '$_ =~ /foo/',
+    '$_ should be omitted when matching a regular expression at line 1.';
 
-run '$_ !~ /foo/',
-    '$_ should be omitted when matching a regular expression at line 1.',
-    '$_ not matching literal regexp';
+t '$_ !~ /foo/',
+    '$_ should be omitted when matching a regular expression at line 1.';
 
-run 'my $re; $_ =~ $re', '$_ matching lexical variable';
+t 'my $re; $_ =~ $re';
 
-run '$_ =~ $re', '$_ matching global variable';
+t '$_ =~ $re';
 
-done_testing;
+done;

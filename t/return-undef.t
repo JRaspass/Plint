@@ -1,27 +1,18 @@
 use t;
 
-run 'return', 'Bare return';
+t 'return';
+t 'return()';
+t 'return undef',  '"return" statement with explicit "undef" at line 1.';
+t 'return(undef)', '"return" statement with explicit "undef" at line 1.';
 
-run 'return()', 'Bare return with parentheses';
+t q/return 'undef'/;
 
-run 'return undef',
-    '"return" statement with explicit "undef" at line 1.',
-    'Return undef';
+t '$foo->return(undef)';
 
-run 'return(undef)',
-    '"return" statement with explicit "undef" at line 1.',
-    'Return undef with parentheses';
+t '$foo and return undef',
+    '"return" statement with explicit "undef" at line 1.';
 
-run 'return "undef"', 'Return the string of undef';
+t 'return  undef, 1';
+t 'return( undef, 1 )';
 
-run '$foo->return(undef)', 'Method called return';
-
-run '$foo and return undef',
-    '"return" statement with explicit "undef" at line 1.',
-    'Return undef inside an expression';
-
-run 'return undef, 1', 'Return multiple values';
-
-run 'return( undef, 1 )', 'Return multiple values with parentheses';
-
-done_testing;
+done;

@@ -1,25 +1,12 @@
 use t;
 
-run 'eval', 'Expression form of "eval" at line 1.', 'Bare eval';
+t 'eval  {}';
+t 'eval( {} )';
 
-run 'eval {}', 'Block eval';
+t q/eval/,       'Expression form of "eval" at line 1.';
+t q/eval ''/,    'Expression form of "eval" at line 1.';
+t q/eval('')/,   'Expression form of "eval" at line 1.';
+t q/eval $foo/,  'Expression form of "eval" at line 1.';
+t q/eval($foo)/, 'Expression form of "eval" at line 1.';
 
-run 'eval( {} )', 'Block eval with parentheses';
-
-run 'eval ""',
-    'Expression form of "eval" at line 1.',
-    'Expression eval with literal string';
-
-run 'eval("")',
-    'Expression form of "eval" at line 1.',
-    'Expression eval with literal string and parentheses';
-
-run 'eval $foo',
-    'Expression form of "eval" at line 1.',
-    'Expression eval with variable';
-
-run 'eval($foo)',
-    'Expression form of "eval" at line 1.',
-    'Expression eval with variable and parentheses';
-
-done_testing;
+done;

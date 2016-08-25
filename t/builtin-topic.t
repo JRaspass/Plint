@@ -1,52 +1,26 @@
 use t;
 
-subtest $_ => sub {
-    run $_, "bare $_";
-    run "$_()", "bare $_ with parentheses";
+for ( qw/
+    abs alarm chomp chop chr chroot cos defined eval evalbytes exp fc glob hex
+    int lc lcfirst length log lstat mkdir oct ord pos print prototype
+    quotemeta readlink readpipe ref require rmdir say sin sqrt stat study uc
+    ucfirst unlink
+/ ) {
+    my @errors = $_ eq 'eval' ? 'Expression form of "eval" at line 1.' : ();
 
-    run "$_ \$_",
-        qq/\$_ should be omitted when calling "$_" at line 1./,
-        "$_ with topic";
+    t $_, @errors;
+    t "$_()", @errors;
 
-    run "$_(\$_)",
-        qq/\$_ should be omitted when calling "$_" at line 1./,
-        "$_ with topic and parentheses";
+    t "$_  \$_ ",
+        qq/\$_ should be omitted when calling "$_" at line 1./, @errors;
 
-    run "$_ \$_[0]", "$_ \$_[0]";
+    t "$_( \$_ )",
+        qq/\$_ should be omitted when calling "$_" at line 1./, @errors;
 
-    run "$_(\$_[0])", "$_(\$_[0])";
+    t "$_  \$_[0]", @errors;
+    t "$_( \$_[0] )", @errors;
+    t "$_  \$_->foo", @errors;
+    t "$_( \$_->foo )", @errors;
+}
 
-    run "$_ \$_->foo", "$_ \$_->foo";
-} for qw/
-    abs alarm chomp chop chr chroot cos defined evalbytes exp fc glob hex int
-    lc lcfirst length log lstat mkdir oct ord pos print prototype quotemeta
-    readlink readpipe ref require rmdir say sin sqrt stat study uc ucfirst
-    unlink
-/;
-
-subtest eval => sub {
-    run 'eval', 'Expression form of "eval" at line 1.', 'bare eval';
-
-    run 'eval()',
-        'Expression form of "eval" at line 1.', 'bare eval with parentheses';
-
-    run 'eval $_',
-        '$_ should be omitted when calling "eval" at line 1.',
-        'Expression form of "eval" at line 1.',
-        'eval with topic';
-
-    run 'eval($_)',
-        '$_ should be omitted when calling "eval" at line 1.',
-        'Expression form of "eval" at line 1.',
-        'eval with topic and parentheses';
-
-    run 'eval $_[0]',
-        'Expression form of "eval" at line 1.',
-        'eval $_[0]';
-
-    run 'eval($_[0])',
-        'Expression form of "eval" at line 1.',
-        'eval($_[0])';
-};
-
-done_testing;
+done;

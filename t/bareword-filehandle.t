@@ -1,15 +1,14 @@
 use t;
 
-run +('open my $fh, "<", "foo"') x 2;
+for ( 'my $fh', qw/$fh STDERR STDIN STDOUT/ ) {
+    t sprintf q/open  %6s, '>', \my $foo/, $_;
+    t sprintf q/open( %6s, '>', \my $foo )/, $_;
+}
 
-run 'open FH, "<", "foo"',
-    'Bareword file handle opened at line 1.',
-    'open FH, "<", "foo"';
+t q/open      FH, '>', \my $foo/,
+    'Bareword file handle opened at line 1.';
 
-run 'open( FH, "<", "foo" )',
-    'Bareword file handle opened at line 1.',
-    'open( FH, "<", "foo" )';
+t q/open(     FH, '>', \my $foo )/,
+    'Bareword file handle opened at line 1.';
 
-run +("open STD$_, '>', \\my \$foo") x 2 for qw/ERR IN OUT/;
-
-done_testing;
+done;

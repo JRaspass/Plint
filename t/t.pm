@@ -7,20 +7,17 @@ use File::Temp;
 use Plint;
 use Test::More;
 
-*main::done_testing = \&Test::More::done_testing;
-*main::subtest      = \&Test::More::subtest;
+*main::done = \&Test::More::done_testing;
 
 sub import {
     strict->import;
     warnings->import;
 }
 
-sub main::run {
-    my $name = pop;
-
+sub main::t {
     my $fh = File::Temp->new;
-    $fh->print(shift);
+    $fh->print( my $code = shift );
     $fh->close;
 
-    is_deeply +( plint( $fh->filename ) )[0], \@_, $name;
+    is_deeply +( plint( $fh->filename ) )[0], \@_, $code;
 }
