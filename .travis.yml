@@ -1,0 +1,12 @@
+language: perl
+perl:
+    - '5.24'
+    - '5.22'
+    - '5.20'
+    - '5.18'
+    - '5.16'
+    - '5.14'
+    - '5.12'
+install: cpanm -n git://github.com/JRaspass/p5-Compiler-Lexer.git
+script: PERL5OPT=-MDevel::Cover prove -It -lv
+after_success: cover -report coveralls -select_re ^lib/
