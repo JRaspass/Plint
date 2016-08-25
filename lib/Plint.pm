@@ -61,6 +61,11 @@ sub plint {
                            $i < @$tokens - 1
                         && $tokens->[ $i + 1 ]{type} == T_SpecificValue
                         && $tokens->[ $i + 1 ]{data} eq '$_'
+                        # Protect aganst $_[0] being interpreted as $_.
+                        && (
+                               $i == @$tokens - 2
+                            || $tokens->[ $i + 2 ]{type} != T_LeftBracket
+                        )
                     )
                     ||
                     (
@@ -68,6 +73,11 @@ sub plint {
                         && $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
                         && $tokens->[ $i + 2 ]{type} == T_SpecificValue
                         && $tokens->[ $i + 2 ]{data} eq '$_'
+                        # Protect aganst $_[0] being interpreted as $_.
+                        && (
+                               $i == @$tokens - 3
+                            || $tokens->[ $i + 3 ]{type} != T_LeftBracket
+                        )
                     )
                 );
 
@@ -101,6 +111,11 @@ sub plint {
                        $i < @$tokens - 1
                     && $tokens->[ $i + 1 ]{type} == T_SpecificValue
                     && $tokens->[ $i + 1 ]{data} eq '$_'
+                    # Protect aganst $_[0] being interpreted as $_.
+                    && (
+                           $i == @$tokens - 2
+                        || $tokens->[ $i + 2 ]{type} != T_LeftBracket
+                    )
                 )
                 ||
                 (
@@ -108,6 +123,11 @@ sub plint {
                     && $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
                     && $tokens->[ $i + 2 ]{type} == T_SpecificValue
                     && $tokens->[ $i + 2 ]{data} eq '$_'
+                    # Protect aganst $_[0] being interpreted as $_.
+                    && (
+                           $i == @$tokens - 3
+                        || $tokens->[ $i + 3 ]{type} != T_LeftBracket
+                    )
                 );
         }
         elsif ( $type == T_Handle ) {
@@ -116,7 +136,12 @@ sub plint {
                 if $i != $#$tokens
                 && $token->{data} ne '-t'
                 && $tokens->[ ++$i ]{type} == T_SpecificValue
-                && $tokens->[   $i ]{data} eq '$_';
+                && $tokens->[   $i ]{data} eq '$_'
+                # Protect aganst $_[0] being interpreted as $_.
+                && (
+                       $i == $#$tokens
+                    || $tokens->[ ++$i ]{type} != T_LeftBracket
+                )
         }
     }
 

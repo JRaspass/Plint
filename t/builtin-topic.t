@@ -11,6 +11,10 @@ subtest $_ => sub {
     run "$_(\$_)",
         qq/\$_ should be omitted when calling "$_" at line 1./,
         "$_ with topic and parentheses";
+
+    run "$_ \$_[0]", "$_ \$_[0]";
+
+    run "$_(\$_[0])", "$_(\$_[0])";
 } for qw/
     abs alarm chomp chop chr chroot cos defined evalbytes exp fc glob hex int
     lc lcfirst length log lstat mkdir oct ord pos print prototype quotemeta
@@ -33,6 +37,14 @@ subtest eval => sub {
         '$_ should be omitted when calling "eval" at line 1.',
         'Expression form of "eval" at line 1.',
         'eval with topic and parentheses';
+
+    run 'eval $_[0]',
+        'Expression form of "eval" at line 1.',
+        'eval $_[0]';
+
+    run 'eval($_[0])',
+        'Expression form of "eval" at line 1.',
+        'eval($_[0])';
 };
 
 done_testing;
