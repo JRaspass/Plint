@@ -1,0 +1,43 @@
+=encoding UTF-8
+
+=head1 NAME
+
+Plint - The Fastest Perl Source Code Linter
+
+=for html
+<a href=https://travis-ci.org/JRaspass/Plint>
+    <img src=https://api.travis-ci.org/JRaspass/Plint.svg>
+</a>
+<a href=https://coveralls.io/r/JRaspass/Plint>
+    <img src=https://coveralls.io/repos/JRaspass/Plint/badge.svg>
+</a>
+<a href=https://metacpan.org/pod/Plint>
+    <img src=https://badge.fury.io/pl/Plint.svg>
+</a>
+<a href=https://github.com/JRaspass/Plint/issues>
+    <img src=https://img.shields.io/github/issues/JRaspass/Plint.svg>
+</a>
+
+=head1 SYNOPSIS
+
+ use Plint;
+
+ my ( $errors, $lines ) = plint 'yaph.pl';
+
+=head1 DESCRIPTION
+
+B<WARNING>: The API of this module is unstable and may change without warning
+(any change will be appropriately documented in the changelog).
+
+=head1 SEE ALSO
+
+L<Perl::Critc>
+
+L<Perl::Lint>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright © 2016 James Raspass.
+
+This is free software; you can redistribute it and/or modify it under the
+same terms as Perl itself.
