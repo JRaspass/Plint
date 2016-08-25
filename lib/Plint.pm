@@ -85,6 +85,14 @@ sub plint {
                     || $token->{type} == T_LeftParenthesis
                     && $tokens->[ ++$i ]{type} == T_LeftBrace );
             }
+            elsif ( $data eq 'open' ) {
+                push @errors, "Bareword file handle opened at line $token->{line}."
+                    if $tokens->[ $i + 1 ]{type} == T_Key
+                    || (
+                           $tokens->[ $i + 1 ]{type} == T_LeftParenthesis
+                        && $tokens->[ $i + 2 ]{type} == T_Key
+                    );
+            }
         }
         elsif ( $type == T_SpecificValue ) {
             if ( $token->{data} eq '$_' ) {
