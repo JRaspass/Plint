@@ -97,6 +97,14 @@ sub plint {
                 &&   $tokens->[ $i + 2 ]{type} == T_SpecificValue
                 &&   $tokens->[ $i + 2 ]{data} eq '$_' );
         }
+        elsif ( $type == T_Handle ) {
+            push @errors,
+                "\$_ should be omitted when using a filetest operator at line $token->{line}."
+                if $i != $#$tokens
+                && $token->{data} ne '-t'
+                && $tokens->[ ++$i ]{type} == T_SpecificValue
+                && $tokens->[   $i ]{data} eq '$_';
+        }
     }
 
     \@errors, $tokens->[-1]{line};
