@@ -19,5 +19,7 @@ sub main::t {
     $fh->print( my $code = shift );
     $fh->close;
 
+    $code =~ y/\n/ /;
+
     is_deeply +( plint( $fh->filename ) )[0], \@_, $code;
 }
