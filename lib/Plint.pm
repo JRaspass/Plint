@@ -64,16 +64,15 @@ sub _find_vars_in_str {
             _var_is_used( $vars, $_ )
                 if $sigil eq '%' && -1 != index $str, "\$$name\{";
 
-            next unless $sigil eq '$' || $sigil eq '@';
-
-            # It's directly interpolated.
-            # The character after the last can either be not a
-            # variable char, or it can be the end of the string.
-            _var_is_used( $vars, $_ )
-                if $str =~ /\Q$_\E(?:[^\w\[{]|$)/;
-
-            # It's iterpolated with braces, e.g. ${foo}
-            _var_is_used( $vars, $_ ) if -1 != index $str, "$sigil\{$name}";
+            if  ( $sigil eq '$' || $sigil eq '@' ) {
+                # It's directly interpolated.
+                # The character after the last can either be not a
+                # variable char, or it can be the end of the string.
+                _var_is_used( $vars, $_ )
+                    if $str =~ /\Q$_\E(?:[^\w\[{]|$)/
+                    # It's iterpolated with braces, e.g. ${foo}
+                    || -1 != index $str, "$sigil\{$name}";
+            }
         }
     }
 }
