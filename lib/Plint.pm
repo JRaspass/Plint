@@ -156,7 +156,12 @@ sub plint {
                 if $token->{data} ne '-t'
                 && _arg_is_dollar_underscore( $i, $tokens );
         }
-        elsif ( $type == T_VarDecl || $type == T_StateDecl ) {
+        elsif (
+               $type == T_VarDecl
+            || $type == T_StateDecl
+            # local our is kinda like my. Especially in old CGIs.
+            || ( $type == T_LocalDecl && $tokens->[ ++$i ]{type} == T_OurDecl )
+        ) {
             my $type = ( $token = $tokens->[ ++$i ] )->{type};
 
             if (
@@ -164,6 +169,8 @@ sub plint {
                 || $type == T_LocalArrayVar
                 || $type == T_LocalHashVar
                 || $type == T_GlobalVar
+                || $type == T_GlobalArrayVar
+                || $type == T_GlobalHashVar
             ) {
                 $vars[-1]{ $token->{data} } = $token->{line};
             }

@@ -1,9 +1,15 @@
 use t;
 
 for ( qw/$ @ %/ ) {
-    # Declared but not used.
-    t "my  ${_}foo",  qq/"${_}foo" is never read from, declared line 1./;
-    t "my (${_}foo)", qq/"${_}foo" is never read from, declared line 1./;
+    for my $decl ( 'my', 'local our' ) {
+        # Declared but not used.
+        t "$decl  ${_}foo",  qq/"${_}foo" is never read from, declared line 1./;
+        t "$decl (${_}foo)", qq/"${_}foo" is never read from, declared line 1./;
+
+        # Direct use.
+        t "$decl  ${_}foo;  ${_}foo";
+        t "$decl (${_}foo); ${_}foo";
+    }
 
     t "my (${_}foo, ${_}bar)",
         qq/"${_}bar" is never read from, declared line 1./,
@@ -11,10 +17,6 @@ for ( qw/$ @ %/ ) {
 
     # Non lexical.
     t "our ${_}foo";
-
-    # Direct use.
-    t "my  ${_}foo;  ${_}foo";
-    t "my (${_}foo); ${_}foo";
 
     # Use in a different scope.
     t "my ${_}foo; { bar(${_}foo) }";
