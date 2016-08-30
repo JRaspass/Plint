@@ -56,6 +56,14 @@ sub _find_vars_in_str {
         for ( keys %{ $vars->[$i] } ) {
             my ( $sigil, $name ) = /(.)(.+)/;
 
+            # It's an array and a slice is interpolated.
+            _var_is_used( $vars, $_ )
+                if $sigil eq '@' && -1 != index $str, "\$$name\[";
+
+            # It's a hash and a slice is interpolated.
+            _var_is_used( $vars, $_ )
+                if $sigil eq '%' && -1 != index $str, "\$$name\{";
+
             next unless $sigil eq '$' || $sigil eq '@';
 
             # It's directly interpolated.
