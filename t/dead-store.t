@@ -64,6 +64,8 @@ t 'my %foo; $foo{foo}';
 t 'my @foo; "$foo[0]"';
 t 'my %foo; "$foo{foo}"';
 
+t 'my @foo; $#foo';
+
 t 'state $foo', '"$foo" is never read from, declared line 1.';
 
 t 'my $foo = \&foo; &$foo';

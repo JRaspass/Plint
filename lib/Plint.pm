@@ -260,6 +260,9 @@ sub plint {
 
             _find_vars_in_str( \@vars, $tokens->[$j]{data} );
         }
+        elsif ( $type == T_ArraySize ) {
+            _var_is_used( \@vars, '@' . $tokens->[ ++$i ]{data} );
+        }
     }
 
     push @errors, qq/"$_" is never read from, declared line $vars[-1]{$_}./
