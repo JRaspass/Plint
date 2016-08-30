@@ -37,6 +37,7 @@ for ( qw/$ @ %/ ) {
     t "my ${_}foo;   /${_}foo/",     @e;
     t "my ${_}foo;  m/${_}foo/",     @e;
     t "my ${_}foo; qr/${_}foo/",     @e;
+    t "my ${_}foo; qx/${_}foo/",     @e;
     t "my ${_}foo;  s/${_}foo/foo/", @e;
     t "my ${_}foo;  s/foo/${_}foo/", @e;
     t "my ${_}foo; tr/${_}foo/foo/", @e;
@@ -68,5 +69,7 @@ t 'my $foo = \&foo; &$foo';
 t 'my $foo = \&foo; $foo->()';
 
 t 'my $foo; Foo->$foo';
+
+t 'my $foo; <$foo>';
 
 done;
