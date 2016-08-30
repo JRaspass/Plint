@@ -11,7 +11,7 @@ for ( qw/
     t $_, @errors;
     t "$_()", @errors;
 
-    t "$_  \$_ ",
+    t "$_  \$_",
         qq/\$_ should be omitted when calling "$_" at line 1./, @errors;
 
     t "$_( \$_ )",
