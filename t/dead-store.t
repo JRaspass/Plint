@@ -59,7 +59,9 @@ for ( qw/$ @ %/ ) {
 }
 
 t 'my @foo; $foo[0]';
+t 'my @foo; @foo[0, 1]';
 t 'my %foo; $foo{foo}';
+t 'my %foo; @foo{qw/foo bar/}';
 
 t 'my @foo; "$foo[0]"';
 t 'my %foo; "$foo{foo}"';

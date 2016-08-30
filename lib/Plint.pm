@@ -208,6 +208,14 @@ sub plint {
                     _var_is_used( \@vars, $token->{data} );
                 }
             }
+            elsif ( $sigil eq '@' && $i != $#$tokens ) {
+                if ( $tokens->[ $i + 1 ]{type} == T_LeftBrace ) {
+                    _var_is_used( \@vars, "\%$name" );
+                }
+                else {
+                    _var_is_used( \@vars, $token->{data} );
+                }
+            }
             else {
                 _var_is_used( \@vars, $token->{data} );
             }
