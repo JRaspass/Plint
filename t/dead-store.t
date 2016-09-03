@@ -56,6 +56,10 @@ for ( qw/$ @ %/ ) {
     t qq/my ${_}foo; say <<"EOF";\n${_}foo\nEOF/, @e;
     t qq/my ${_}foo; say <<'EOF';\n${_}foo\nEOF/,
         qq/"${_}foo" is never read from, declared line 1./;
+
+    # Fully qualified main package. Used to cause warnings.
+    t qq/ ${_}::foo /;
+    t qq/"${_}::foo"/;
 }
 
 t 'my @foo; $foo[0]';

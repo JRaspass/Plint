@@ -54,7 +54,7 @@ sub _find_vars_in_str {
 
     for ( my $i = $#$vars; $i != -1; $i-- ) {
         for ( keys %{ $vars->[$i] } ) {
-            my ( $sigil, $name ) = /(.)(.+)/;
+            my ( $sigil, $name ) = /(.)(.*)/;
 
             # It's an array and a slice is interpolated.
             _var_is_used( $vars, $_ )
@@ -193,7 +193,7 @@ sub plint {
             || $type == T_GlobalArrayVar
             || $type == T_GlobalHashVar
         ) {
-            my ( $sigil, $name ) = $token->{data} =~ /(.)(.+)/;
+            my ( $sigil, $name ) = $token->{data} =~ /(.)(.*)/;
 
             if ( $sigil eq '$' && $i != $#$tokens ) {
                 $type = $tokens->[ $i + 1 ]{type};
