@@ -1,0 +1,14 @@
+configure_requires:
+  Module::Build::Tiny: 0
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Plint
+provides:
+  Toggle:
+    file: lib/Plint.pm
+    version: 0.001
+requires:
+  Compiler::Lexer: 0
+version: 0.001
