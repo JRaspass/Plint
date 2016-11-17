@@ -118,7 +118,8 @@ sub plint {
                 my $j = $i + 1;
 
                 $j++ if $tokens->[$j]{type} == T_LeftParenthesis;
-                $j++ if $tokens->[$j]{type} == T_GlobalVar;
+                $j++ if $tokens->[$j]{type} == T_Var
+                     || $tokens->[$j]{type} == T_GlobalVar;
                 $j++ if $tokens->[$j]{type} == T_RightParenthesis;
 
                 push @errors,
