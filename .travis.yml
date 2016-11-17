@@ -8,5 +8,5 @@ perl:
     - '5.14'
     - '5.12'
 install: cpanm -n --skip-satisfied Devel::Cover::Report::Coveralls git://github.com/JRaspass/p5-Compiler-Lexer.git
-script: PERL5OPT=-MDevel::Cover prove -It -lv
+script: PERL5OPT=-MDevel::Cover prove -It -l
 after_success: cover -report coveralls -select_re ^lib/
