@@ -131,6 +131,9 @@ sub plint {
                         && $tokens->[ $i + 2 ]{type} == T_Key
                     );
             }
+            elsif ( $data eq 'no' && $tokens->[++$i]{data} eq 'strict' ) {
+                push @errors, "strict disabled at line $token->{line}.";
+            }
         }
         elsif ( $type == T_SpecificValue ) {
             if ( $token->{data} eq '$_' ) {
