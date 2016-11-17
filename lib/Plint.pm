@@ -117,14 +117,20 @@ sub plint {
             if ( $data eq 'ref' ) {
                 my $j = $i + 1;
 
-                $j++ if $tokens->[$j]{type} == T_LeftParenthesis;
-                $j++ if $tokens->[$j]{type} == T_Var
-                     || $tokens->[$j]{type} == T_GlobalVar;
-                $j++ if $tokens->[$j]{type} == T_RightParenthesis;
+                $j++ if $tokens->[$j]
+                     && $tokens->[$j]{type} == T_LeftParenthesis;
+
+                $j++ if $tokens->[$j]
+                     && (   $tokens->[$j]{type} == T_Var
+                         || $tokens->[$j]{type} == T_GlobalVar );
+
+                $j++ if $tokens->[$j]
+                     && $tokens->[$j]{type} == T_RightParenthesis;
 
                 push @errors,
                     qq/Ref check should use "Ref::Util::is_\L$1ref" at line $token->{line}./
-                    if (
+                    if @$tokens > $j
+                    && (
                            $tokens->[$j]{type} == T_StringEqual
                         || $tokens->[$j]{type} == T_StringNotEqual
                     )
