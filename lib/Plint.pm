@@ -114,7 +114,27 @@ sub plint {
                 if exists $topical_funcs{$data}
                 && _arg_is_dollar_underscore( $i, $tokens );
 
-            if ( $data eq 'eval' ) {
+            if ( $data eq 'ref' ) {
+                my $j = $i + 1;
+
+                $j++ if $tokens->[$j]{type} == T_LeftParenthesis;
+                $j++ if $tokens->[$j]{type} == T_GlobalVar;
+                $j++ if $tokens->[$j]{type} == T_RightParenthesis;
+
+                push @errors,
+                    qq/Ref check should use "Ref::Util::is_\L$1ref" at line $token->{line}./
+                    if (
+                           $tokens->[$j]{type} == T_StringEqual
+                        || $tokens->[$j]{type} == T_StringNotEqual
+                    )
+                    && (
+                           $tokens->[++$j]{type} == T_RawString
+                        || $tokens->[  $j]{type} == T_String
+                    )
+                    && $tokens->[$j]{data} =~
+                        /^(ARRAY|CODE|GLOB|HASH|REF|Regexp|SCALAR)$/;
+            }
+            elsif ( $data eq 'eval' ) {
                 my $line = $token->{line};
 
                 push @errors, qq/Expression form of "eval" at line $line./
