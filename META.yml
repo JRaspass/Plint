@@ -6,7 +6,7 @@ meta-spec:
   version: 1.4
 name: Plint
 provides:
-  Toggle:
+  Plint:
     file: lib/Plint.pm
     version: 0.001
 requires:
