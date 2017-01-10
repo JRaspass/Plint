@@ -89,9 +89,10 @@ sub plint {
     local ( @ARGV, $/ ) = @_;
 
     my ( $tokens, @errors ) = Compiler::Lexer::tokenize( $lexer, scalar <> );
-    my @vars = {};
 
-    for ( my $i = 0; my $token = $tokens->[$i]; $i++ ) {
+    my ( @vars, %imports ) = {};
+
+    TOKEN: for ( my $i = 0; my $token = $tokens->[$i]; $i++ ) {
         my $type = $token->{type};
 
         if ( $type == T_Return ) {
@@ -105,9 +106,42 @@ sub plint {
                 && $token->{data} eq 'undef'
                 && ( $j == $#$tokens || $tokens->[ ++$j ]{type} != T_Comma );
         }
+        elsif ( $type == T_UseDecl ) {
+            my $pkg = $tokens->[ ++$i ]{data};
 
+            # Build the used package name up.
+            $pkg .= $tokens->[ ++$i ]{data} . $tokens->[ ++$i ]{data}
+                while $tokens->[ $i + 1 ]{type} == T_NamespaceResolver;
+
+            # Pragmas are often false positives.
+            next if $pkg =~ /^[a-z]+$/;
+
+            # Skip a few false positives.
+            next if $pkg eq 'Regexp::Common'
+                 || $pkg eq 'feature'
+                 || $pkg eq 'lib';
+
+            $type = $tokens->[ $i + 1 ]{type};
+
+            my @imports
+                = $type == T_RawString || $type == T_String
+                ? $tokens->[ $i + 1 ]{data}
+                : $type == T_RegList
+                ? split ' ', $tokens->[ $i + 3 ]{data}
+                : ();
+
+            # Skip the whole import list if any look like non functions.
+            for (@imports) {
+                next TOKEN if !/^[a-z_]+$/ || $_ eq 'import';
+            }
+
+            @imports{@imports} = ("$pkg at line $token->{line}") x @imports;
+        }
+        elsif ( $type == T_Key ) {
+            delete $imports{ $token->{data} };
+        }
         elsif ( $type == T_BuiltinFunc ) {
-            my $data = $token->{data};
+            delete $imports{ my $data = $token->{data} };
 
             push @errors,
                 qq/\$_ should be omitted when calling "$data" at line $token->{line}./
@@ -303,8 +337,18 @@ sub plint {
         }
     }
 
-    push @errors, qq/"$_" is never read from, declared line $vars[-1]{$_}./
-        for sort keys %{ $vars[-1] };
+    while ( my ( $import, $pkg ) = each %imports ) {
+        push @errors, qq/Unused import of "$import" from $pkg./
+    }
+
+    while ( my ( $var, $line ) = each %{ $vars[-1] } ) {
+        push @errors, qq/"$var" is never read from, declared line $line./;
+    }
+
+    # Sort errors by line number.
+    @errors = sort {
+        ( $a =~ /(\d+)\.$/ )[0] <=> ( $b =~ /(\d+)\.$/ )[0] || $a cmp $b
+    } @errors;
 
     \@errors, $tokens->[-1]{line};
 }
